@@ -1,0 +1,44 @@
+import sqlite3
+
+# Создаём файл базы данных
+conn = sqlite3.connect('database.db')
+cursor = conn.cursor()
+
+# Создаём таблицу расписания врача
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS schedule (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    is_booked INTEGER DEFAULT 0
+)
+''')
+
+# Создаём таблицу записей пациентов
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS appointments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    patient_name TEXT NOT NULL,
+    contact TEXT NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL
+)
+''')
+
+# Пример заполнения расписания вручную (чтобы были свободные слоты)
+schedule_data = [
+    ('2025-04-29', '10:00'),
+    ('2025-04-29', '11:00'),
+    ('2025-04-29', '12:00'),
+    ('2025-04-30', '14:00'),
+]
+
+cursor.executemany('''
+INSERT INTO schedule (date, time)
+VALUES (?, ?)
+''', schedule_data)
+
+conn.commit()
+conn.close()
+
+print("✅ База данных успешно создана и заполнена!")
